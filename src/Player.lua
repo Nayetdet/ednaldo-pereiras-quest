@@ -1,59 +1,70 @@
+local Animations = require("src.utilities.Animations")
 local vector = require("lib.vector")
-local Animations = require("src.Animations")
 
 local Player = {}
 Player.__index = Player
 
-Player.SPEED = 300
-Player.COLLIDER_OFFSET = 20
-Player.DIRECTIONS = {
-    w = vector(0, -1),
-    a = vector(-1, 0),
-    s = vector(0, 1),
-    d = vector(1, 0)
-}
-
-function Player.new(world)
+function Player.new()
     local self = setmetatable({}, Player)
-    
-    self.animations = Animations.new("sprites/player-sheet.png", 12, 18, 2)
-    self.animations:add("w", 1, 4, 4)
-    self.animations:add("a", 1, 4, 2)
-    self.animations:add("s", 1, 4, 1)
-    self.animations:add("d", 1, 4, 3)
-    self.animations:setCurrentAnimation("d")
-    
     self.direction = vector(0, 0)
-    self.width = self.animations.frameWidth * Animations.FRAME_SCALE
-    self.height = self.animations.frameHeight * Animations.FRAME_SCALE
-    
-    self.collider = world:newBSGRectangleCollider(400, 200, self.width - Player.COLLIDER_OFFSET, self.height - Player.COLLIDER_OFFSET, 10)
-    self.collider:setFixedRotation(true)
-
+    self.speed = 80
+    self.width = 16
+    self.height = 24
+    self.collider = nil
+    self.animations = self:initializeAnimations(self.width, self.height)
     return self
 end
 
+function Player:initializeAnimations(width, height)
+    local animations = Animations.new("sprites/player-sheet.png", width, height, 1)
+    animations:add("down", 1, 4, 1)
+    animations:add("up", 1, 4, 2)
+    animations:add("left", 1, 4, 4)
+    animations:add("right", 1, 4, 3)
+    animations:setCurrentAnimation("down")
+    return animations
+end
+
 function Player:update(dt)
-    self.direction:set(0, 0)
-    for key, direction in pairs(Player.DIRECTIONS) do
-        if love.keyboard.isDown(key) then
-            self.direction:replace(self.direction + direction)
-            self.animations:setCurrentAnimation(key)
+    local directions = {
+        {name = "down", key = "s", vector = vector(0, 1)},
+        {name = "up", key = "w", vector = vector(0, -1)},
+        {name = "left", key = "a", vector = vector(-1, 0)},
+        {name = "right", key = "d", vector = vector(1, 0)},
+    }
+    
+    local movimentDirection = vector(0, 0)
+    for _, direction in ipairs(directions) do
+        if love.keyboard.isDown(direction.key) then
+            movimentDirection:replace(movimentDirection + direction.vector)
+            self.direction:replace(direction.vector)
+            self.animations:setCurrentAnimation(direction.name)
         end
     end
-
-    if self.direction == vector(0, 0) then
+    
+    if movimentDirection == vector(0, 0) then
         self.animations.currentAnimation:gotoFrame(self.animations.idleFrame)
     end
+    
+    self.collider:setLinearVelocity((movimentDirection:norm() * self.speed):unpack())
+    self.animations:update(dt)
+end
 
-    self.direction:norm() -- Evita que o deslocamento na diagonal seja mais rápido
-    self.direction = self.direction * Player.SPEED
-    self.collider:setLinearVelocity(self.direction.x, self.direction.y)
-    self.animations:update(dt)    
+function Player:interact(world)
+    local queryPosition = self:getPosition() + self.direction * vector(self.width, self.height) / 2
+    local colliders = world.collisions:queryCircleArea(queryPosition.x, queryPosition.y, 5, {"Button"})
+    
+    if #colliders > 0 then
+
+    end
+end
+
+function Player:getPosition()
+    return vector(self.collider:getPosition())
 end
 
 function Player:draw()
-    self.animations:draw(self.collider:getX(), self.collider:getY())
+    self.animations:draw(self:getPosition())
 end
 
 return Player

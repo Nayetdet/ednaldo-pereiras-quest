@@ -4,12 +4,8 @@ local vector = require("lib.vector")
 local Animations = {}
 Animations.__index = Animations
 
-Animations.FRAME_DELAY = 0.2
-Animations.FRAME_SCALE = 6
-
 function Animations.new(spriteSheetPath, frameWidth, frameHeight, idleFrame)
     local self = setmetatable({}, Animations)
-    
     self.spriteSheet = love.graphics.newImage(spriteSheetPath)
     self.spriteSheet:setFilter("nearest", "nearest")
 
@@ -26,13 +22,12 @@ function Animations.new(spriteSheetPath, frameWidth, frameHeight, idleFrame)
     
     self.collection = {}
     self.currentAnimation = nil
-
     return self
 end
 
 function Animations:add(name, frameStart, frameEnd, row)
     local frameRange = tostring(frameStart) .. "-" .. tostring(frameEnd)
-    self.collection[name] = anim8.newAnimation(self.grid(frameRange, row), Animations.FRAME_DELAY)
+    self.collection[name] = anim8.newAnimation(self.grid(frameRange, row), 0.15)
 end
 
 function Animations:setCurrentAnimation(name)
@@ -47,8 +42,8 @@ end
 
 function Animations:draw(x, y)
     assert(self.currentAnimation, "No active animation to draw.")
-    local offset = vector(self.frameWidth, frameHeight) / 2
-    self.currentAnimation:draw(self.spriteSheet, x, y, nil, Animations.FRAME_SCALE, nil, offset.x, offset.x)
+    local offset = vector(self.frameWidth, self.frameHeight) / 2
+    self.currentAnimation:draw(self.spriteSheet, x, y, nil, nil, nil, offset.x, offset.y)
 end
 
 return Animations
