@@ -50,13 +50,10 @@ function Player:update(dt)
     self.animations:update(dt)
 end
 
-function Player:interact(world)
+function Player:isInteractingWithNPC(world)
     local queryPosition = self:getPosition() + self.direction * vector(self.width, self.height) / 2
-    local colliders = world.collisions:queryCircleArea(queryPosition.x, queryPosition.y, 5, {"Button"})
-    
-    if #colliders > 0 then
-
-    end
+    local colliders = world.collisions:queryCircleArea(queryPosition.x, queryPosition.y, 5, {"NPC"})
+    return #colliders > 0
 end
 
 function Player:getPosition()
@@ -64,7 +61,7 @@ function Player:getPosition()
 end
 
 function Player:draw()
-    self.animations:draw(self:getPosition())
+    self.animations:draw(self:getPosition():unpack())
 end
 
 return Player

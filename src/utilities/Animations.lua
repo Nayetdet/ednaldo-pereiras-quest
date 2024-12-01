@@ -31,7 +31,7 @@ function Animations:add(name, frameStart, frameEnd, row)
 end
 
 function Animations:setCurrentAnimation(name)
-    assert(self.collection[name], "Animation '" .. name .. "' not found in the collection.")
+    assert(self.collection[name], "Animation '" .. name .. "' not found in the collection")
     self.currentAnimation = self.collection[name]
 end
 
@@ -41,7 +41,7 @@ function Animations:update(dt)
 end
 
 function Animations:draw(x, y)
-    assert(self.currentAnimation, "No active animation to draw.")
+    assert(self.currentAnimation, "No active animation to draw")
     local offset = vector(self.frameWidth, self.frameHeight) / 2
     self.currentAnimation:draw(self.spriteSheet, x, y, nil, nil, nil, offset.x, offset.y)
 end

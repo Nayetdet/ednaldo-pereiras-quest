@@ -15,7 +15,7 @@ end
 
 function World:initializeCollisions()
     self.collisions:addCollisionClass("Player")
-    self.collisions:addCollisionClass("Button")
+    self.collisions:addCollisionClass("NPC")
 
     self:initializeMapCollisions()
     self:initializePlayerCollision(100, 100, 5)
