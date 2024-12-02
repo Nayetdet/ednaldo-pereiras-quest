@@ -1,28 +1,19 @@
 local Animations = require("src.utilities.Animations")
+local BaseEntity = require("src.entities.BaseEntity")
 local vector = require("lib.vector")
 
 local Player = {}
 Player.__index = Player
+setmetatable(Player, {__index = BaseEntity})
 
 function Player.new()
-    local self = setmetatable({}, Player)
-    self.direction = vector(0, 0)
-    self.speed = 80
-    self.width = 16
-    self.height = 24
-    self.collider = nil
-    self.animations = self:initializeAnimations(self.width, self.height)
+    local self = setmetatable(BaseEntity.new("sprites/player-sheet.png", 16, 24), Player)
+    self.animations:add("down", 1, 4, 1)
+    self.animations:add("up", 1, 4, 2)
+    self.animations:add("left", 1, 4, 4)
+    self.animations:add("right", 1, 4, 3)
+    self.animations:setCurrentAnimation("down")
     return self
-end
-
-function Player:initializeAnimations(width, height)
-    local animations = Animations.new("sprites/player-sheet.png", width, height, 1)
-    animations:add("down", 1, 4, 1)
-    animations:add("up", 1, 4, 2)
-    animations:add("left", 1, 4, 4)
-    animations:add("right", 1, 4, 3)
-    animations:setCurrentAnimation("down")
-    return animations
 end
 
 function Player:update(dt)
@@ -43,7 +34,7 @@ function Player:update(dt)
     end
     
     if movimentDirection == vector(0, 0) then
-        self.animations.currentAnimation:gotoFrame(self.animations.idleFrame)
+        self.animations.currentAnimation:gotoFrame(1)
     end
     
     self.collider:setLinearVelocity((movimentDirection:norm() * self.speed):unpack())
@@ -54,14 +45,6 @@ function Player:isInteractingWithNPC(world)
     local queryPosition = self:getPosition() + self.direction * vector(self.width, self.height) / 2
     local colliders = world.collisions:queryCircleArea(queryPosition.x, queryPosition.y, 5, {"NPC"})
     return #colliders > 0
-end
-
-function Player:getPosition()
-    return vector(self.collider:getPosition())
-end
-
-function Player:draw()
-    self.animations:draw(self:getPosition():unpack())
 end
 
 return Player

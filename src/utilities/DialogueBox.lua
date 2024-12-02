@@ -52,7 +52,7 @@ function DialogueBox:update(dt)
 end
 
 function DialogueBox:draw()
-    love.graphics.setColor(0, 0, 0, 0.5)
+    love.graphics.setColor(0, 0, 0, 0.75)
     love.graphics.rectangle("fill", self.offset, self.offset, self.width, self.height)
     
     love.graphics.setColor(1, 1, 1, 1)

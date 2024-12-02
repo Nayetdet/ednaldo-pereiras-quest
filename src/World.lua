@@ -4,21 +4,11 @@ local wf = require("lib.windfield")
 local World = {}
 World.__index = World
 
-function World.new(player)
+function World.new()
     local self = setmetatable({}, World)
-    self.player = player
     self.collisions = wf.newWorld(0, 0)
     self.map = sti("maps/map.lua")
-    self:initializeCollisions()
     return self
-end
-
-function World:initializeCollisions()
-    self.collisions:addCollisionClass("Player")
-    self.collisions:addCollisionClass("NPC")
-
-    self:initializeMapCollisions()
-    self:initializePlayerCollision(100, 100, 5)
 end
 
 function World:initializeMapCollisions()
@@ -30,10 +20,10 @@ function World:initializeMapCollisions()
     end
 end
 
-function World:initializePlayerCollision(startX, startY, colliderOffset)
-    self.player.collider = self.collisions:newBSGRectangleCollider(startX, startY, self.player.width - colliderOffset, self.player.height - colliderOffset, 5)
-    self.player.collider:setCollisionClass("Player")
-    self.player.collider:setFixedRotation(true)
+function World:initializeEntityPosition(entity, collisionClass, x, y, colliderOffset)
+    entity.collider = self.collisions:newBSGRectangleCollider(x, y, entity.width - colliderOffset, entity.height - colliderOffset, 5)
+    entity.collider:setCollisionClass(collisionClass)
+    entity.collider:setFixedRotation(true)
 end
 
 function World:update(dt)

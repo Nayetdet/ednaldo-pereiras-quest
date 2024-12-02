@@ -4,14 +4,13 @@ local vector = require("lib.vector")
 local Animations = {}
 Animations.__index = Animations
 
-function Animations.new(spriteSheetPath, frameWidth, frameHeight, idleFrame)
+function Animations.new(spriteSheetPath, frameWidth, frameHeight)
     local self = setmetatable({}, Animations)
     self.spriteSheet = love.graphics.newImage(spriteSheetPath)
     self.spriteSheet:setFilter("nearest", "nearest")
 
     self.frameWidth = frameWidth
     self.frameHeight = frameHeight
-    self.idleFrame = idleFrame
 
     self.grid = anim8.newGrid(
         self.frameWidth,

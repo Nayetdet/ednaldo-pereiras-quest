@@ -4,16 +4,21 @@ local Camera = require("src.utilities.Camera")
 local DialogueBox = require("src.utilities.DialogueBox")
 
 local player = Player.new()
-local world = World.new(player)
+local world = World.new()
 local cam = Camera.new(player, world)
-local currentDialogueBox = nil
+local dialogueBox = nil
 
-local npc = Player.new()
+local NPC = require("src.entities.NPC")
+local npc = NPC.new()
 
 function love.load()
-    npc.collider = world.collisions:newRectangleCollider(100, 200, npc.width, npc.height)
-    npc.collider:setCollisionClass("NPC")
-    npc.collider:setFixedRotation(true)
+    world.collisions:addCollisionClass("Player")
+    world.collisions:addCollisionClass("NPC")
+
+    world:initializeMapCollisions()
+    world:initializeEntityPosition(player, "Player", 100, 100, 5)
+
+    world:initializeEntityPosition(npc, "NPC", 100, 200, 5)
     npc.collider:setType("static")
 end
 
@@ -22,8 +27,8 @@ function love.update(dt)
     world:update(dt)
     cam:update()
 
-    if currentDialogueBox then
-        currentDialogueBox:update(dt)
+    if dialogueBox then
+        dialogueBox:update(dt)
     end
 end
 
@@ -33,14 +38,14 @@ function love.keypressed(key, scancode, isrepeat)
     end
 
     if player:isInteractingWithNPC(world) then
-        currentDialogueBox = DialogueBox.new("NPC1")
+        dialogueBox = DialogueBox.new("NPC2")
         return
     end
 
-    if currentDialogueBox and currentDialogueBox:hasNextDialogue() then
-        currentDialogueBox:gotoNextDialogue()
+    if dialogueBox and dialogueBox:hasNextDialogue() then
+        dialogueBox:gotoNextDialogue()
     else
-        currentDialogueBox = nil
+        dialogueBox = nil
     end
 end
 
@@ -52,7 +57,7 @@ function love.draw()
         world.collisions:draw()
     cam:detach()
 
-    if currentDialogueBox then
-        currentDialogueBox:draw()
+    if dialogueBox then
+        dialogueBox:draw()
     end
 end
