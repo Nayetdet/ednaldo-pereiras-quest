@@ -1,12 +1,12 @@
 local Player = require("src.entities.Player")
 local World = require("src.World")
 local Camera = require("src.utilities.Camera")
-local DialogueBox = require("src.utilities.DialogueBox")
+local DialogueManager = require("src.utilities.DialogueManager")
 
 local player = Player.new()
 local world = World.new()
 local cam = Camera.new(player, world)
-local dialogueBox = nil
+local dialogueManager = DialogueManager.new()
 
 local NPC = require("src.entities.NPC")
 local npc = NPC.new()
@@ -25,11 +25,8 @@ end
 function love.update(dt)
     player:update(dt)
     world:update(dt)
-    cam:update()
-
-    if dialogueBox then
-        dialogueBox:update(dt)
-    end
+    cam:update(dt)
+    dialogueManager:update(dt)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -38,14 +35,9 @@ function love.keypressed(key, scancode, isrepeat)
     end
 
     if player:isInteractingWithNPC(world) then
-        dialogueBox = DialogueBox.new("NPC2")
-        return
-    end
-
-    if dialogueBox and dialogueBox:hasNextDialogue() then
-        dialogueBox:gotoNextDialogue()
+        dialogueManager:add("2")
     else
-        dialogueBox = nil
+        dialogueManager:interact()
     end
 end
 
@@ -54,10 +46,7 @@ function love.draw()
         world:draw()
         player:draw()
         npc:draw()
-        world.collisions:draw()
+        -- world.collisions:draw()
     cam:detach()
-
-    if dialogueBox then
-        dialogueBox:draw()
-    end
+    dialogueManager:draw()
 end

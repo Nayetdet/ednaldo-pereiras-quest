@@ -1,13 +1,12 @@
 local dialogues = {
-    ["NPC1"] = {
+    ["1"] = {
         "estamos",
         "todos",
         "fritos"
     },
-    ["NPC2"] = {
-        "goze",
-        "no meu rosto",
-        "com força"
+    ["2"] = {
+        "goze no meu rosto com força",
+        "por gentileza"
     }
 }
 

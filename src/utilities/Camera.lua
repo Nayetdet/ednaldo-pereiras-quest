@@ -14,7 +14,7 @@ function Camera.new(player, world)
     return self
 end
 
-function Camera:update()
+function Camera:update(dt)
     self.base:lookAt(self.player.collider:getPosition())
     self:keepCameraWithinMap()
 end
